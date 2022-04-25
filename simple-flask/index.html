@@ -1,0 +1,201 @@
+<html>
+
+<head>
+   <title>HCC App</title>
+   <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"></script>
+   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+   <style>
+      img {
+         padding: 20px !important;
+      }
+
+      h2 {
+         margin-top: 60px;
+      }
+
+      .padding-top {
+         margin-top: 50px !important;
+      }
+
+      textarea {
+         height: 300px
+      }
+   </style>
+   <script>
+      $(document).ready(function () {
+
+         const element = document.querySelector('form');
+
+         element.addEventListener('submit', event => {
+            event.preventDefault();
+            console.log('Form submission cancelled.');
+         });
+
+         $('#btnSend').click(function () {
+
+            dt = {
+               "HICNO": $('#hicno').val(),
+               "SEX": Number($('#gender').val()),
+               "DOB": $('#dob').val(),
+               "NEMCAID": Number($('#medicaid').val()),
+               "LTIMCAID": Number($('#nemcaid').val()),
+               "OREC": Number($('#orec').val()),
+               "DIAG": $('#diag').val()
+            }
+
+            // Send it to backend
+            $.ajax({
+               type: 'POST',
+               url: '/get_params',
+               data: JSON.stringify(dt, null, '\t'),
+               contentType: 'application/json;charset=UTF-8',
+               success: function (data) {
+                  
+                  final_dt = JSON.parse(data);
+                  $("#fba_val").html(final_dt["SCORE_COMMUNITY_FBA"][0]);
+                  $("#fbd_val").html(final_dt["SCORE_COMMUNITY_FBD"][0]);
+                  $("#na_val").html(final_dt["SCORE_COMMUNITY_NA"][0]);
+                  $("#nd_val").html(final_dt["SCORE_COMMUNITY_ND"][0]);
+                  $("#pba_val").html(final_dt["SCORE_COMMUNITY_PBA"][0]);
+                  $("#pbd_val").html(final_dt["SCORE_COMMUNITY_PBD"][0]);
+                  $("#inst_val").html(final_dt["SCORE_INSTITUTIONAL"][0]);
+                  $("#new_val").html(final_dt["SCORE_NEW_ENROLLEE"][0]);
+                  $("#snp_new_val").html(final_dt["SCORE_SNP_NEW_ENROLLEE"][0]);
+               }
+            });
+         });
+      });
+   </script>
+</head>
+
+<body>
+   <div class="container-fluid">
+      <div class="row">
+         <div class="col-md-2">
+         </div>
+         <div class="col-md-10">
+            <h2>CMS Model Scoring</h2>
+         </div>
+      </div>
+      <div class="row padding-top">
+         <div class="col-md-6">
+            <div class="row">
+               <div class="col-md-12">
+                  <form id="patient-form">
+                     <p>Patient Information</p>
+                     <small class="form-text text-muted">We'll never share your information with anyone else.</small>
+                     <hr>
+                     <div class="form-group">
+                        <label for="hicno">HICNO</label>
+                        <input type="text" class="form-control" id="hicno" aria-describedby="hicno"
+                           value="NY100040438VH" placeholder="Enter your personal ID">
+                     </div>
+                     <div class="form-group">
+                        <label for="dob">Date of Birth</label>
+                        <input type="text" class="form-control" id="dob" value="04/16/1992" placeholder="Date of Birth">
+                     </div>
+                     <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select class="form-control" id="gender">
+                           <option value="1">Male</option>
+                           <option value="2">Female</option>
+                        </select>
+                     </div>
+                     <div class="form-group">
+                        <label for="medicaid">Medicaid</label>
+                        <select class="form-control" id="medicaid">
+                           <option value="1">Yes</option>
+                           <option value="0">No</option>
+                        </select>
+                     </div>
+                     <div class="form-group">
+                        <label for="nemcaid">New Enrollee</label>
+                        <select class="form-control" id="nemcaid">
+                           <option value="1">Yes</option>
+                           <option value="0">No</option>
+                        </select>
+                     </div>
+                     <div class="form-group">
+                        <label for="orec">Reason for Entitlement</label>
+                        <select class="form-control" id="orec">
+                           <option value="0">Old Age</option>
+                           <option value="1">Disability (DIB)</option>
+                           <option value="2">End Stage Renal Disease (ESRD)</option>
+                           <option value="3">Disability & End Stage Renal Disease</option>
+                        </select>
+                     </div>
+                     <div class="form-group">
+                        <label for="diag">Diagonostics</label>
+                        <select class="form-control" id="diag">
+                           <option value="E2724">E2724</option>
+                           <option value="E4019">E4019</option>
+                        </select>
+                     </div>
+                     <div class="input-group">
+                        <button class="btn btn-primary" type="button" type="submit" id="btnSend">Calculate
+                           Score</button>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+         <div class="col-md-6">
+            <div id="data_from_sas">
+               <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Type</th>
+                      <th scope="col">Score</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td id="fba">SCORE_COMMUNITY_FBA</td>
+                      <td id="fba_val"></td>
+                    </tr>
+                    <tr>
+                     <td id="fbd">SCORE_COMMUNITY_FBD</td>
+                     <td id="fbd_val"></td>
+                    </tr>
+                    <tr>
+                     <td id="na">SCORE_COMMUNITY_NA</td>
+                     <td id="na_val"></td>
+                    </tr>
+                    <tr>
+                     <td id="nd">SCORE_COMMUNITY_ND</td>
+                     <td id="nd_val"></td>
+                    </tr>
+                    <tr>
+                     <td id="pba">SCORE_COMMUNITY_PBA</td>
+                     <td id="pba_val"></td>
+                    </tr>
+                    <tr>
+                     <td id="pbd">SCORE_COMMUNITY_PBD</td>
+                     <td id="pbd_val"></td>
+                    </tr>
+                    <tr>
+                     <td id="inst">SCORE_INSTITUTIONAL</td>
+                     <td id="inst_val"></td>
+                    </tr>
+                    <tr>
+                     <td id="new">SCORE_NEW_ENROLLEE</td>
+                     <td id="new_val"></td>
+                    </tr>
+                    <tr>
+                     <td id="snp_new">SCORE_SNP_NEW_ENROLLEE</td>
+                     <td id="snp_new_val"></td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+         </div>
+      </div>
+   </div>
+</body>
+
+</html>

@@ -1,0 +1,1 @@
+USERMODS="$JREOPTIONS -allowxcmd"
