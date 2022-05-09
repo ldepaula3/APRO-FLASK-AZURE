@@ -37,11 +37,7 @@ ___
 ```shell
 sudo apt-get update
 
-sudo apt-get install \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release
+sudo apt-get install ca-certificates curl gnupg lsb-release
 
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
@@ -57,7 +53,7 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io
 ** note: execute this command on the Linux instance command line.
 
 ```shell
-git clone https://gitlab.sas.com/ludepa/apro_flask_azure
+git clone https://github.com/ldepaula3/apro_flask_azure
 ```
 
 #### 2.1 - Get your SAS license file (.jwt) and paste inside aprocontainer/sasinside/ directory
@@ -168,18 +164,6 @@ sudo docker logs -f [CONTAINER_ID]
 ```
 
 ___
-
-
-## Contributing
-
-We welcome contributions! 
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) 
-for details on how to submit contributions to this project.
-
-## License
-
-See the [LICENSE](LICENSE) file for details.
 
 ## Additional Resources
 
