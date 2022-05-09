@@ -1,7 +1,6 @@
+# Running CMS Risk Adjustment Models via API with SAS Analytics Pro (Viya) on Azure
 
-### Running CMS Risk Adjustment Models with SAS Analytics Pro (Viya) on Azure
-
-# 0 - Introduction
+## Overview
 
 This repository is an asset for those that want to install and configure SAS Analytics Pro (Viya) on Azure and connect to third party applications via SSH.
 
@@ -28,7 +27,12 @@ Here it is a overview of this repo.
 ![Repository Overview](repo_overview.png)
 
 ___
-## 1 - Install Docker
+
+### Installation
+
+#### 1 - Install Docker
+
+** note: execute these commands on the Linux instance command line.
 
 ```shell
 sudo apt-get update
@@ -48,21 +52,27 @@ sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
 ```
 
-## 2 - Get Project Files
+#### 2 - Get Project Files
+
+** note: execute this command on the Linux instance command line.
 
 ```shell
-git clone https://github.com/ldepaula3/apro_flask_azure.git
+git clone https://gitlab.sas.com/ludepa/apro_flask_azure
 ```
 
-## 2.1 - Get your SAS license file (.jwt) and paste inside aprocontainer/sasinside/ directory
+#### 2.1 - Get your SAS license file (.jwt) and paste inside aprocontainer/sasinside/ directory
 
-## 3 - Download images from SAS Mirror
+#### 3 - Download images from SAS Mirror
+
+** note: execute this command on the Linux instance command line.
 
 ```shell
 sudo docker pull [SAS Mirror]/viya-4-x64_oci_linux_2-docker/sas-analytics-pro:[TAG]
 ```
 
-## 4 - Set Permissions & configure SSH - generate keys
+#### 4 - Set Permissions & configure SSH - generate keys
+
+** note: execute these commands on the Linux instance command line.
 
 ```shell
 cd apro_flask_azure 
@@ -72,9 +82,10 @@ chmod 777 ssh_setup.sh
 ./ssh_setup.sh
 ```
 
-## 5 - Run SAS Analytics Pro on Viya Container
+#### 5 - Run SAS Analytics Pro on Viya Container
 
-** note: you will have to edit the file launchsas.sh (lines 3 and 11) to match the **image mirror, tag and license filename**.
+** note 1: execute these commands on the Linux instance command line.
+** note 2: you will have to edit the file launchsas.sh (lines 3 and 11) to match the **image mirror, tag and license filename**.
 
 ```shell
 cd aprocontainer 
@@ -86,7 +97,10 @@ sudo docker logs -f sas-analytics-pro
 docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' sas-analytics-pro
 ```
 
-## 6 - Get inside SAS Analytics Pro on Viya container and set permissions on keys/folders
+#### 6 - Get inside SAS Analytics Pro on Viya container and set permissions on keys/folders
+
+** note 1: execute these command on the Linux instance command line.
+** note 2: it will then login into the container and the next 4 commands are executed inside the sas-analytics-pro container.
 
 ```shell
 
@@ -101,16 +115,20 @@ cd data/.ssh
 chmod 600 authorized_keys id_rsa id_rsa.pub 
 ```
 
-## 6.1 (optional) - Test SSH connection
+#### 6.1 (optional) - Test SSH connection
+
+** note: execute these commands inside the sas-analytics-pro container.
 
 ```shell
 ssh localhost 
 ```
 ___
-### Exit and go back to linux machine where docker is running 
+#### Exit and go back to linux machine where docker is running 
 ___
 
-## 7 - Build Simple-Flask container
+#### 7 - Build Simple-Flask container
+
+** note 1: execute these commands on the Linux instance command line.
 
 ```shell
 cd ../simple-flask
@@ -118,26 +136,53 @@ cd ../simple-flask
 sudo docker build --tag python-docker . 
 ```
 
-## 8 - Run Simple-Flask Application container
+#### 8 - Run Simple-Flask Application container
+
+** note 1: execute these commands on the Linux instance command line.
 
 ```shell
 ./launchpython.sh
 ```
 
-## 9 - Check if Simple-Flask can connect to SAS Analytics Pro container
+#### 9 - Check if Simple-Flask can connect to SAS Analytics Pro container
 
-** make sure the IP address here matches the one on **simple-flask/configs/sascfg_personal.py**
+** note 1: execute the first command on the Linux instance command line.
+** note 2: it will then login into the container and the next 2 commands are executed inside the Simple Flask container.
+** note 3: make sure the IP address matches the one on **simple-flask/configs/sascfg_personal.py** (as we checked on step 5)
 
 ```shell
+
+docker exec -it [SIMPLE FLASK CONTAINER ID] bash
+
 cd /root/.ssh
 
 ssh sasdemo@172.17.0.2
 ```
 
-## 10 (optional) - Inspect logs from Simple-Flask container
+#### 10 (optional) - Inspect logs from Simple-Flask container
+
+** note 1: execute this command on the Linux instance command line.
 
 ```shell
 sudo docker logs -f [CONTAINER_ID]
 ```
 
 ___
+
+
+## Contributing
+
+We welcome contributions! 
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) 
+for details on how to submit contributions to this project.
+
+## License
+
+See the [LICENSE](LICENSE) file for details.
+
+## Additional Resources
+
+* [SAS Analytics Pro product page](https://www.sas.com/en_us/software/analytics-pro.html)
+* [SAS Analytics Pro documentation](https://go.documentation.sas.com/doc/en/anprocdc/v_010/anprowlcm/home.htm?fromDefault=)
+* [SASPy documentation](https://sassoftware.github.io/saspy)
